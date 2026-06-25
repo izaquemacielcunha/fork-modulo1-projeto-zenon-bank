@@ -1,10 +1,13 @@
 package br.com.zenon;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import br.com.zenon.model.Customer;
 import br.com.zenon.model.Transaction;
 import br.com.zenon.model.TransactionType;
+import br.com.zenon.service.TransactionIngestor;
+import br.com.zenon.service.TransactionIngestorImpl;
 
 public class App {
     void main(String[] args) {
@@ -47,7 +50,13 @@ public class App {
                 0
         );
 
-        IO.println("Transação 1: " + transactionOne.toString());
-        IO.println("Transação 1: " + transactionTwo.toString());
+        IO.println("Transação 1: " + transactionOne);
+        IO.println("Transação 2: " + transactionTwo);
+
+        IO.println("-------Transactions from csv file---------");
+        TransactionIngestor ingestor = new TransactionIngestorImpl();
+        List<Transaction> transactions = ingestor.ingest("data/PS_20174392719_1491204439457_log.csv");
+
+        transactions.stream().limit(10).forEach(System.out::println);
     }
 }
