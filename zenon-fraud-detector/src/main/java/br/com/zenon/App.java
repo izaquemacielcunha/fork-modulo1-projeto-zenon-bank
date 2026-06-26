@@ -13,41 +13,31 @@ public class App {
     void main(String[] args) {
 
         // Transaction 1
-        Customer transactionOneCustomerOrig = new Customer("C1231006815", BigDecimal.valueOf(170136.0));
-        Customer transactionOneCustomerDest = new Customer("M1979787155", BigDecimal.valueOf(0.0));
+        Customer transactionOneCustomerOrig = new Customer("C1231006815", new BigDecimal("170136.0"), new BigDecimal("160296.36"));
+        Customer transactionOneCustomerDest = new Customer("M1979787155", new BigDecimal("0.0"), new BigDecimal("0.0"));
 
-        BigDecimal transactionOneAmount = BigDecimal.valueOf(9839.64);
         Transaction transactionOne = new Transaction(
                 1,
                 TransactionType.PAYMENT,
-                transactionOneAmount,
-                transactionOneCustomerOrig.name(),
-                transactionOneCustomerOrig.balance(),
-                transactionOneCustomerOrig.balance().subtract(transactionOneAmount), // Isso aqui altera direto no customer ou apenas retorna o valor?
-                transactionOneCustomerDest.name(),
-                transactionOneCustomerDest.balance(),
-                transactionOneCustomerDest.balance(),
-                0,
-                0
+                new BigDecimal("9839.64"),
+                transactionOneCustomerOrig,
+                transactionOneCustomerDest,
+                Boolean.FALSE,
+                Boolean.FALSE
         );
 
         // Transaction 2
-        Customer transactionTwoCustomerOrig = new Customer("C1280323807", BigDecimal.valueOf(850002.52));
-        Customer transactionTwoCustomerDest = new Customer("C873221189", BigDecimal.valueOf(6510099.11));
+        Customer transactionTwoCustomerOrig = new Customer("C1280323807", new BigDecimal("850002.52"), new BigDecimal("0.0"));
+        Customer transactionTwoCustomerDest = new Customer("C873221189", new BigDecimal("6510099.11"), new BigDecimal("7360101.63"));
 
-        BigDecimal transactionTwoAmount = BigDecimal.valueOf(850002.52);
         Transaction transactionTwo = new Transaction(
                 743,
                 TransactionType.CASH_OUT,
-                transactionTwoAmount,
-                transactionTwoCustomerOrig.name(),
-                transactionTwoCustomerOrig.balance(),
-                transactionTwoCustomerOrig.balance().subtract(transactionTwoAmount), // Isso aqui altera direto no customer ou apenas retorna o valor?
-                transactionTwoCustomerDest.name(),
-                transactionTwoCustomerDest.balance(),
-                transactionTwoCustomerDest.balance().add(transactionTwoAmount),
-                1,
-                0
+                new BigDecimal("850002.52"),
+                transactionTwoCustomerOrig,
+                transactionTwoCustomerDest,
+                Boolean.TRUE,
+                Boolean.FALSE
         );
 
         IO.println("Transação 1: " + transactionOne);
@@ -57,6 +47,6 @@ public class App {
         TransactionIngestor ingestor = new TransactionIngestorImpl();
         List<Transaction> transactions = ingestor.ingest("data/PS_20174392719_1491204439457_log.csv");
 
-        transactions.stream().limit(10).forEach(System.out::println);
+        transactions.stream().limit(10).forEach(IO::println);
     }
 }

@@ -4,5 +4,6 @@ import java.math.BigDecimal;
 
 public record Customer(
         String name,
-        BigDecimal balance
+        BigDecimal oldBalance,
+        BigDecimal newBalance
 ) { }
