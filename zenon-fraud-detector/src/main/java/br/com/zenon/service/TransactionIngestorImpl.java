@@ -6,12 +6,14 @@ import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.zenon.model.Customer;
 import br.com.zenon.model.Transaction;
 import br.com.zenon.model.TransactionType;
 
@@ -19,6 +21,22 @@ public class TransactionIngestorImpl implements TransactionIngestor {
 
     @Override
     public List<Transaction> ingest(String fileName) {
+        Path path = Paths.get(fileName);
+
+        try {
+            List<String> csvLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+            return csvLines.stream()
+                    .skip(1)
+                    .limit(1000)
+                    .map(this::buildTransactionFromCsvLine)
+                    .toList();
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Transaction> ingestOld(String fileName) {
         List<Transaction> transactions = new ArrayList<>();
         Path path = Paths.get(fileName);
 
@@ -55,8 +73,8 @@ public class TransactionIngestorImpl implements TransactionIngestor {
             }
 
         }
-        catch (IOException ex) {
-            ex.printStackTrace();
+        catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
         return transactions;
@@ -68,15 +86,11 @@ public class TransactionIngestorImpl implements TransactionIngestor {
         return new Transaction(
                 Integer.parseInt(csvValues[0]),
                 TransactionType.valueOf(csvValues[1]),
-                BigDecimal.valueOf(Double.parseDouble(csvValues[2])),
-                csvValues[3],
-                BigDecimal.valueOf(Double.parseDouble(csvValues[4])),
-                BigDecimal.valueOf(Double.parseDouble(csvValues[5])),
-                csvValues[6],
-                BigDecimal.valueOf(Double.parseDouble(csvValues[7])),
-                BigDecimal.valueOf(Double.parseDouble(csvValues[8])),
-                Integer.parseInt(csvValues[9]),
-                Integer.parseInt(csvValues[10])
+                new BigDecimal(csvValues[2]),
+                new Customer(csvValues[3], new BigDecimal(csvValues[4]), new BigDecimal(csvValues[5])),
+                new Customer(csvValues[6], new BigDecimal(csvValues[7]), new BigDecimal(csvValues[8])),
+                "1".equals(csvValues[9]),
+                "1".equals(csvValues[10])
         );
 
     }
