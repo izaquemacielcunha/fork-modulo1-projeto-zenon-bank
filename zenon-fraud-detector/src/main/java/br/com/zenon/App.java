@@ -8,6 +8,7 @@ import br.com.zenon.model.Transaction;
 import br.com.zenon.model.TransactionType;
 import br.com.zenon.service.TransactionIngestor;
 import br.com.zenon.service.TransactionIngestorImpl;
+import br.com.zenon.validation.TransactionValidator;
 
 public class App {
     void main(String[] args) {
@@ -44,9 +45,14 @@ public class App {
         IO.println("Transação 2: " + transactionTwo);
 
         IO.println("-------Transactions from csv file---------");
-        TransactionIngestor ingestor = new TransactionIngestorImpl();
+        TransactionIngestor ingestor = new TransactionIngestorImpl(new TransactionValidator());
         List<Transaction> transactions = ingestor.ingest("data/PS_20174392719_1491204439457_log.csv");
 
         transactions.stream().limit(10).forEach(IO::println);
+
+        IO.println("-------Bad transactions from csv file---------");
+        List<Transaction> badTransactions = ingestor.ingest("data/paysim_with_bad_data.csv");
+
+        badTransactions.stream().limit(10).forEach(IO::println);
     }
 }
