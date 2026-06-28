@@ -2,8 +2,11 @@ package br.com.zenon;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import br.com.zenon.model.Customer;
+import br.com.zenon.model.FraudAnalyzer;
 import br.com.zenon.model.Transaction;
 import br.com.zenon.model.TransactionType;
 import br.com.zenon.service.TransactionIngestor;
@@ -47,12 +50,42 @@ public class App {
         IO.println("-------Transactions from csv file---------");
         TransactionIngestor ingestor = new TransactionIngestorImpl(new TransactionValidator());
         List<Transaction> transactions = ingestor.ingest("data/PS_20174392719_1491204439457_log.csv");
-
         transactions.stream().limit(10).forEach(IO::println);
 
         IO.println("-------Bad transactions from csv file---------");
         List<Transaction> badTransactions = ingestor.ingest("data/paysim_with_bad_data.csv");
-
         badTransactions.stream().limit(10).forEach(IO::println);
+
+        IO.println("-------FraudAnalyzer---------");
+        FraudAnalyzer fraudAnalyzer = new FraudAnalyzer(transactions);
+
+        List<Transaction> fraudsTransactions = fraudAnalyzer.fraudTransactions();
+        IO.println("Total de Fraudes: " + fraudsTransactions.size());
+
+        List<Transaction> highestFraudTransactions = fraudAnalyzer.highestFraudTransactions(3);
+        IO.println("Top 3 Fraudes de Maior Valor: ");
+        highestFraudTransactions.stream().
+                map(Transaction::amount)
+                .forEach(amount -> IO.println("%.2f".formatted(amount)));
+
+        IO.println("Clientes Suspeitos: ");
+        List<Transaction> highestSuspiciousFraudTransactions = fraudAnalyzer.highestFraudTransactions(5);
+        highestSuspiciousFraudTransactions.stream()
+                .map(Transaction::origin)
+                .map(Customer::name)
+                .distinct()
+                .forEach(IO::println);
+
+        BigDecimal prejuizo = fraudsTransactions.stream()
+                .map(Transaction::amount)
+                .reduce(BigDecimal::add)
+                .get();
+        IO.println("Prejuízo Total: " + prejuizo);
+
+        Map<TransactionType, Long> fraudsByType = fraudsTransactions.stream()
+                        .collect(Collectors.groupingBy(Transaction::type, Collectors.counting()));
+        IO.println("Fraudes por Tipo:");
+        fraudsByType.entrySet().forEach(IO::println);
     }
+
 }
