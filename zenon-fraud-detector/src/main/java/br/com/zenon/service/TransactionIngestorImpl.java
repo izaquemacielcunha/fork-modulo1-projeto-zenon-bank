@@ -36,7 +36,7 @@ public class TransactionIngestorImpl implements TransactionIngestor {
             List<String> csvLines = Files.readAllLines(path, StandardCharsets.UTF_8);
             return csvLines.stream()
                     .skip(1)
-                    .limit(1000)
+                    .limit(50000)
                     .map(this::buildTransactionFromCsvLine)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
