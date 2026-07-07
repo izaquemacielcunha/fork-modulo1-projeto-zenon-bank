@@ -27,7 +27,6 @@ public class TransactionIngestorImpl implements TransactionIngestor {
         this.transactionValidator = transactionValidator;
     }
 
-
     @Override
     public List<Transaction> ingest(String fileName) {
         Path path = Paths.get(fileName);
@@ -36,7 +35,7 @@ public class TransactionIngestorImpl implements TransactionIngestor {
             List<String> csvLines = Files.readAllLines(path, StandardCharsets.UTF_8);
             return csvLines.stream()
                     .skip(1)
-                    .limit(50000)
+                    .limit(100_000)
                     .map(this::buildTransactionFromCsvLine)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
@@ -98,7 +97,7 @@ public class TransactionIngestorImpl implements TransactionIngestor {
             transactionValidator.validateTransactionFields(csvValues);
 
             Transaction transaction = new Transaction(
-                    Integer.parseInt(Optional.of(csvValues[0]).orElseThrow()),
+                    Integer.parseInt(csvValues[0]),
                     TransactionType.valueOf(csvValues[1]),
                     new BigDecimal(csvValues[2]),
                     new Customer(csvValues[3], new BigDecimal(csvValues[4]), new BigDecimal(csvValues[5])),

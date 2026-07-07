@@ -7,6 +7,7 @@ import br.com.zenon.model.TransactionType;
 
 public class TransactionValidator {
 
+    // TODO create individual methods for each validation
     public void validateTransactionFields(String[] csvValues) {
 
         Optional<String> step = OptionalOfStringNullAndEmptyValidation(csvValues[0]);
