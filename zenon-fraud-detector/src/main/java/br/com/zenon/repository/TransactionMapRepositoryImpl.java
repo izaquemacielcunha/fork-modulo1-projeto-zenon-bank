@@ -26,6 +26,11 @@ public class TransactionMapRepositoryImpl implements TransactionRepository {
         return Optional.empty();
     }
 
+    @Override
+    public void save(Transaction transaction) {
+        this.transactionsMap.putIfAbsent(transaction.origin().name(), transaction);
+    }
+
     private Map<String, Transaction> toMap(List<Transaction> transactions) {
         return transactions.stream()
                 .collect(Collectors.toMap(trans -> trans.origin().name(), Function.identity()));

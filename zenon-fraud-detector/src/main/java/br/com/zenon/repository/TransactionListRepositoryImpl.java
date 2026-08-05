@@ -22,4 +22,9 @@ public class TransactionListRepositoryImpl implements TransactionRepository {
                 .orElse(null);
         return Optional.ofNullable(tran);
     }
+
+    @Override
+    public void save(Transaction transaction) {
+        this.transactions.add(transaction);
+    }
 }
